@@ -26,23 +26,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Run OWASP Dependency Check (SCA)
-        run: |
-          docker run --rm \
-            -v $(pwd):/src \
-            owasp/dependency-check \
-            --scan /src \
-            --format HTML \
-            --disableArchive \
-            --exclude /src/frontend/dist,/src/ftp \
-            --out /src/dependency-check-report.html
+      - name: Run Snyk Vulnerability Scan (SCA)
+        uses: snyk/actions@v1
+        with:
+          args: test --all-projects
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      - name: Upload Dependency Check Report
+      - name: Upload Snyk Report
         if: failure() || success()
         uses: actions/upload-artifact@v3
         with:
-          name: dependency-check-report
-          path: /src/dependency-check-report.html
+          name: snyk-report
+          path: snyk_report.json
 
   build-and-deploy:
     runs-on: ubuntu-latest
