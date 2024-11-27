@@ -27,14 +27,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Snyk Vulnerability Scan (SCA)
-        uses: snyk/actions@v1
+        uses: snyk/snyk@v1
         with:
           args: test --all-projects
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Upload Snyk Report
-        if: failure() || success()
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: snyk-report
